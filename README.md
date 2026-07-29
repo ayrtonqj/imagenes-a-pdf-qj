@@ -1,88 +1,88 @@
-# 🖼️ Image to PDF Converter (Desktop Pro)
+# 🖼️ Conversor de Imágenes a PDF (Desktop Pro)
 
-A modern, fast, and intuitive desktop application to convert images and compressed archives (ZIP, RAR) into organized PDF documents. Built with Python and **CustomTkinter** featuring a native dark mode UI.
+Una aplicación de escritorio moderna, rápida e intuitiva para convertir imágenes y archivos comprimidos (ZIP, RAR) en documentos PDF organizados. Desarrollada en Python con **CustomTkinter** y diseño nativo en Modo Oscuro.
 
-Developed by **Ayrton QJ** ([@ayrtonqj](https://github.com/ayrtonqj)).
-
----
-
-## ✨ Features
-
-- **Modern Dark UI**: Powered by CustomTkinter with smooth dark themes, rounded cards, and responsive controls.
-- **Smart Auto-Naming**: Automatically names the output PDF based on the first added folder, image, or ZIP/RAR file name.
-- **Realistic Page Layout Preview**: Displays a live preview matching the selected PDF page size (A4, Letter, Legal, Original) and orientation (Portrait/Landscape).
-- **Archive Extraction**: Automatically extracts and scans `.zip` and `.rar` archives.
-- **Persistent Preferences**: Configure default page size, orientation, JPEG quality, and output folder in `⚙️ Settings`, saved permanently across runs.
-- **Real Windows Documents Folder**: Automatically detects and uses the official Windows Shell Documents directory (supports OneDrive & folder redirection).
-- **Batch Processing**: Convert hundreds of images into a single PDF in seconds.
-- **Sorting & Reordering**: Move images up/down, drag & drop, or sort alphabetically A-Z.
-- **Standalone Portable `.exe`**: Easily compile into a single `.exe` file with custom icon support.
+Desarrollado por **Ayrton QJ** ([@ayrtonqj](https://github.com/ayrtonqj)).
 
 ---
 
-## 🛠️ Installation & Setup
+## ✨ Características Principales
 
-### Prerequisites
-- Python 3.8+ ([python.org](https://python.org))
+- **Interfaz Moderna en Modo Oscuro**: Creada con CustomTkinter, ofrece una experiencia visual elegante con tarjetas redondeadas y controles receptivos.
+- **Asignación Inteligente de Nombres**: Asigna automáticamente el nombre del PDF de salida según la primera carpeta, imagen o archivo ZIP/RAR seleccionado.
+- **Vista Previa Proporcional del PDF**: Visualiza en tiempo real el resultado según el tamaño de página elegido (A4, Carta, Oficio, Original) y su orientación (Vertical/Horizontal).
+- **Soporte para Archivos Comprimidos**: Descompresión y escaneo automático de archivos `.zip` y `.rar`.
+- **Ajustes Persistentes**: Guarda tu configuración preferida en `⚙️ Ajustes` (tamaño de página, calidad, carpeta de salida) para recordarla en cada uso.
+- **Ruta Real de Documentos de Windows**: Identifica automáticamente la ubicación oficial de la carpeta *Documentos* en Windows (compatible con OneDrive y carpetas redirigidas).
+- **Conversión por Lotes**: Convierte cientos de imágenes en un solo PDF en cuestión de segundos.
+- **Ordenamiento y Reorganización**: Permite subir/bajar posiciones, arrastrar o clasificar de A-Z.
+- **Ejecutable Portable (.exe)**: Fácil compilación en un solo archivo `.exe` con ícono personalizado.
 
-### Steps
+---
 
-1. **Clone the Repository**
+## 🛠️ Instalación y Configuración
+
+### Requisitos Previos
+- Python 3.8 o superior ([python.org](https://python.org))
+
+### Pasos
+
+1. **Clonar el Repositorio**
    ```bash
    git clone https://github.com/ayrtonqj/imagenes-a-pdf-qj.git
    cd imagenes-a-pdf-qj
    ```
 
-2. **Create & Activate Virtual Environment** (Optional but recommended)
-   ```bash
+2. **Crear y Activar un Entorno Virtual** (Opcional pero recomendado)
+   ```powershell
    python -m venv .venv
    .\.venv\Scripts\activate
    ```
 
-3. **Install Dependencies**
-   ```bash
+3. **Instalar Dependencias**
+   ```powershell
    pip install -r requirements.txt
    ```
 
-4. **Run the Application**
-   ```bash
+4. **Ejecutar la Aplicación**
+   ```powershell
    python main.py
    ```
 
 ---
 
-## 📦 Building Standalone Executable (.exe)
+## 📦 Compilación a Ejecutable Portable (.exe)
 
-To build a portable `.exe` file with the custom logo icon:
+Para crear el archivo ejecutable portable `.exe` con el logo oficial del programa:
 
-```bash
+```powershell
 pip install pyinstaller
-python -m PyInstaller --noconsole --onefile --icon="img/logo.ico" --add-data "img/logo.png;img" --name "Imagenes_a_PDF" main.py
+python -m PyInstaller --noconsole --onefile --icon="img/logo.ico" --add-data "img;img" --name "Imagenes_a_PDF" main.py
 ```
 
-The compiled binary will be placed inside the `dist/` directory.
+El ejecutable compilado estará disponible en la carpeta `dist/`.
 
 ---
 
-## 📁 Project Structure
+## 📁 Estructura del Proyecto
 
 ```
 img_to_pdf/
-├── main.py              # Application entry point & window initialization
-├── config_app.py        # Centralized project metadata (version, author, repo)
-├── app.py               # Main CustomTkinter GUI layout & logic
-├── preview.py           # Real-time PDF layout preview panel
-├── pdf_generator.py     # High-performance PDF generation engine
-├── file_handler.py      # Directory scanning, ZIP/RAR extraction & sorting
-├── img/                 # Application icons and branding assets (logo.png, logo.ico)
-├── requirements.txt     # Python dependencies
-├── .gitignore           # Git ignore rules
-├── README.md            # English documentation
-└── INSTRUCCIONES.md     # Spanish installation & usage guide
+├── main.py              # Punto de entrada e inicialización de la ventana con ícono
+├── config_app.py        # Metadatos del proyecto (Versión, Autor, Repositorio)
+├── app.py               # Lógica e interfaz gráfica CustomTkinter
+├── preview.py           # Panel de vista previa proporcional
+├── pdf_generator.py     # Motor de generación rápida de PDF
+├── file_handler.py      # Escaneo de carpetas y extracción de ZIP/RAR
+├── img/                 # Activos visuales (logo.png, logo.ico)
+├── requirements.txt     # Dependencias de Python
+├── .gitignore           # Archivos excluidos de Git
+├── README.md            # Documentación principal en Español
+└── INSTRUCCIONES.md     # Guía detallada de uso e instalación
 ```
 
 ---
 
-## 📄 License
+## 📄 Licencia
 
-Distributed under the MIT License. Developed with ❤️ by [Ayrton QJ](https://github.com/ayrtonqj).
+Distribuido bajo la licencia MIT. Desarrollado con ❤️ por [Ayrton QJ](https://github.com/ayrtonqj).

@@ -1,3 +1,4 @@
+import sys
 import os
 import json
 import threading
@@ -6,6 +7,11 @@ from tkinter import filedialog, messagebox
 import customtkinter as ctk
 from pathlib import Path
 from PIL import Image, ImageTk
+
+def get_resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return Path(sys._MEIPASS) / relative_path
+    return Path(__file__).parent / relative_path
 
 from file_handler import collect_from_sources
 from pdf_generator import generate_pdf
@@ -397,7 +403,7 @@ class ImageToPDFApp:
         about_win.resizable(False, False)
         about_win.grab_set()
 
-        logo_path = Path(__file__).parent / "img" / "logo.png"
+        logo_path = get_resource_path("img/logo.png")
         if logo_path.exists():
             try:
                 logo_img = Image.open(logo_path)

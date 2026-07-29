@@ -10,6 +10,12 @@ from app import ImageToPDFApp
 from config_app import APP_NAME, APP_VERSION
 
 
+def get_resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return Path(sys._MEIPASS) / relative_path
+    return Path(__file__).parent / relative_path
+
+
 def main():
     ctk.set_appearance_mode("Dark")
     ctk.set_default_color_theme("blue")
@@ -20,12 +26,13 @@ def main():
     root.minsize(900, 580)
 
     # Set Window Icon
-    icon_ico = Path(__file__).parent / "img" / "logo.ico"
-    icon_png = Path(__file__).parent / "img" / "logo.png"
+    icon_ico = get_resource_path("img/logo.ico")
+    icon_png = get_resource_path("img/logo.png")
 
     if icon_ico.exists():
         try:
             root.iconbitmap(str(icon_ico))
+            root.after(200, lambda: root.iconbitmap(str(icon_ico)))
         except Exception:
             pass
 
