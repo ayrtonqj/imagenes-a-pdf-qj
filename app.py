@@ -103,6 +103,7 @@ class ImageToPDFApp:
         self.output_dir_default = out_dir
 
         self.filename_default = cfg.get("OUTPUT_FILENAME") or os.getenv("OUTPUT_FILENAME") or "output"
+        self.original_mode_default = cfg.get("ORIGINAL_MODE") or os.getenv("ORIGINAL_MODE") or "Ajustar Ancho (100% Nativo)"
 
     def _build_ui(self):
         # Main Layout
@@ -192,34 +193,43 @@ class ImageToPDFApp:
             values=["A4", "Letter", "Legal", "Original"], width=130
         ).grid(row=1, column=1, sticky="w", pady=3)
 
-        # Row 2: Orientación
-        ctk.CTkLabel(config_outer, text="Orientación:").grid(row=2, column=0, sticky="e", padx=(10, 5), pady=3)
+        # Row 2: Modo Original (Activo cuando Tamaño == Original)
+        ctk.CTkLabel(config_outer, text="Modo Original:").grid(row=2, column=0, sticky="e", padx=(10, 5), pady=3)
+        self.original_mode_var = tk.StringVar(value=self.original_mode_default)
+        self.orig_menu = ctk.CTkOptionMenu(
+            config_outer, variable=self.original_mode_var,
+            values=["Ajustar Ancho (100% Nativo)", "Máximo 1920px (Optimizado)", "Nativo Sin Ajuste"], width=210
+        )
+        self.orig_menu.grid(row=2, column=1, sticky="w", pady=3)
+
+        # Row 3: Orientación
+        ctk.CTkLabel(config_outer, text="Orientación:").grid(row=3, column=0, sticky="e", padx=(10, 5), pady=3)
         self.orientation_var = tk.StringVar(value=self.orientation_default)
         ctk.CTkOptionMenu(
             config_outer, variable=self.orientation_var,
             values=["Portrait", "Landscape"], width=130
-        ).grid(row=2, column=1, sticky="w", pady=3)
+        ).grid(row=3, column=1, sticky="w", pady=3)
 
-        # Row 3: Calidad
-        ctk.CTkLabel(config_outer, text="Calidad:").grid(row=3, column=0, sticky="e", padx=(10, 5), pady=3)
+        # Row 4: Calidad
+        ctk.CTkLabel(config_outer, text="Calidad:").grid(row=4, column=0, sticky="e", padx=(10, 5), pady=3)
         self.quality_var = tk.IntVar(value=self.quality_default)
         qf = ctk.CTkFrame(config_outer, fg_color="transparent")
-        qf.grid(row=3, column=1, sticky="ew", pady=3)
+        qf.grid(row=4, column=1, sticky="ew", pady=3)
         ctk.CTkSlider(qf, from_=1, to=100, number_of_steps=99, variable=self.quality_var, width=130).pack(side="left")
         ctk.CTkLabel(qf, textvariable=self.quality_var, width=30).pack(side="left", padx=(5, 0))
 
-        # Row 4: Salida
-        ctk.CTkLabel(config_outer, text="Salida:").grid(row=4, column=0, sticky="e", padx=(10, 5), pady=3)
+        # Row 5: Salida
+        ctk.CTkLabel(config_outer, text="Salida:").grid(row=5, column=0, sticky="e", padx=(10, 5), pady=3)
         of = ctk.CTkFrame(config_outer, fg_color="transparent")
-        of.grid(row=4, column=1, sticky="ew", pady=3)
+        of.grid(row=5, column=1, sticky="ew", pady=3)
         self.output_var = tk.StringVar(value=self.output_dir_default)
         ctk.CTkEntry(of, textvariable=self.output_var).pack(side="left", fill="x", expand=True)
         ctk.CTkButton(of, text="Examinar", width=70, command=self.browse_output).pack(side="right", padx=(5, 0))
 
-        # Row 5: Archivo
-        ctk.CTkLabel(config_outer, text="Archivo:").grid(row=5, column=0, sticky="e", padx=(10, 5), pady=(3, 8))
+        # Row 6: Archivo
+        ctk.CTkLabel(config_outer, text="Archivo:").grid(row=6, column=0, sticky="e", padx=(10, 5), pady=(3, 8))
         self.filename_var = tk.StringVar(value=self.filename_default)
-        ctk.CTkEntry(config_outer, textvariable=self.filename_var).grid(row=5, column=1, sticky="ew", pady=(3, 8))
+        ctk.CTkEntry(config_outer, textvariable=self.filename_var).grid(row=6, column=1, sticky="ew", pady=(3, 8))
 
         # Structured Description Info Card (Right side)
         info_card = ctk.CTkFrame(config_outer, fg_color="#09090b", corner_radius=8)
@@ -250,6 +260,7 @@ class ImageToPDFApp:
         self.desc_q_label.pack(anchor="w", padx=10, pady=(2, 8))
 
         self.page_size_var.trace_add("write", self._on_config_change)
+        self.original_mode_var.trace_add("write", self._on_config_change)
         self.orientation_var.trace_add("write", self._on_config_change)
         self.quality_var.trace_add("write", self._on_config_change)
 
@@ -268,15 +279,38 @@ class ImageToPDFApp:
 
     def _on_config_change(self, *args):
         ps = self.page_size_var.get()
+        om = self.original_mode_var.get()
         ori = self.orientation_var.get()
         q = self.quality_var.get()
 
-        size_info = {
-            "A4": "📐 Tamaño: A4 (210 × 297 mm)\n   Estándar internacional.",
-            "Letter": "📐 Tamaño: Carta (8.5 × 11 in)\n   Estándar común en América.",
-            "Legal": "📐 Tamaño: Oficio (8.5 × 14 in)\n   Formato extendido para oficina.",
-            "Original": "📐 Tamaño: Original de Imagen\n   Mantiene la resolución nativa."
-        }.get(ps, "")
+        if ps == "Original":
+            self.orig_menu.configure(state="normal")
+            if "100%" in om:
+                size_info = (
+                    "📐 Tamaño: Original\n"
+                    "   Modo: Ajustar Ancho (100% Nativo)\n"
+                    "   Conserva píxeles 6K/HD intactos y\n"
+                    "   alinea el ancho visual para lectura pareja."
+                )
+            elif "1920" in om:
+                size_info = (
+                    "📐 Tamaño: Original\n"
+                    "   Modo: Máximo 1920px (Optimizado)\n"
+                    "   Redimensiona imágenes 6K/4K a 1080p."
+                )
+            else:
+                size_info = (
+                    "📐 Tamaño: Original\n"
+                    "   Modo: Nativo Sin Ajuste\n"
+                    "   Píxeles crudos (Páginas gigantes/pequeñas)."
+                )
+        else:
+            self.orig_menu.configure(state="disabled")
+            size_info = {
+                "A4": "📐 Tamaño: A4 (210 × 297 mm)\n   Estándar internacional.",
+                "Letter": "📐 Tamaño: Carta (8.5 × 11 in)\n   Estándar común en América.",
+                "Legal": "📐 Tamaño: Oficio (8.5 × 14 in)\n   Formato extendido para oficina."
+            }.get(ps, "")
 
         ori_info = "🔄 Orientación: Vertical (Portrait)" if ori == "Portrait" else "🔄 Orientación: Horizontal (Landscape)"
 
@@ -310,23 +344,28 @@ class ImageToPDFApp:
         size_var = tk.StringVar(value=self.page_size_var.get())
         ctk.CTkOptionMenu(form_frame, variable=size_var, values=["A4", "Letter", "Legal", "Original"]).grid(row=0, column=1, sticky="w", padx=5, pady=8)
 
+        # Modo Original Predeterminado
+        ctk.CTkLabel(form_frame, text="Modo Original Predeterminado:").grid(row=1, column=0, sticky="e", padx=5, pady=8)
+        orig_var = tk.StringVar(value=self.original_mode_var.get())
+        ctk.CTkOptionMenu(form_frame, variable=orig_var, values=["Ajustar Ancho (100% Nativo)", "Máximo 1920px (Optimizado)", "Nativo Sin Ajuste"]).grid(row=1, column=1, sticky="w", padx=5, pady=8)
+
         # Orientation
-        ctk.CTkLabel(form_frame, text="Orientación Predeterminada:").grid(row=1, column=0, sticky="e", padx=5, pady=8)
+        ctk.CTkLabel(form_frame, text="Orientación Predeterminada:").grid(row=2, column=0, sticky="e", padx=5, pady=8)
         ori_var = tk.StringVar(value=self.orientation_var.get())
-        ctk.CTkOptionMenu(form_frame, variable=ori_var, values=["Portrait", "Landscape"]).grid(row=1, column=1, sticky="w", padx=5, pady=8)
+        ctk.CTkOptionMenu(form_frame, variable=ori_var, values=["Portrait", "Landscape"]).grid(row=2, column=1, sticky="w", padx=5, pady=8)
 
         # Quality
-        ctk.CTkLabel(form_frame, text="Calidad Predeterminada:").grid(row=2, column=0, sticky="e", padx=5, pady=8)
+        ctk.CTkLabel(form_frame, text="Calidad Predeterminada:").grid(row=3, column=0, sticky="e", padx=5, pady=8)
         quality_var = tk.IntVar(value=self.quality_var.get())
         q_frame = ctk.CTkFrame(form_frame, fg_color="transparent")
-        q_frame.grid(row=2, column=1, sticky="ew", padx=5, pady=8)
+        q_frame.grid(row=3, column=1, sticky="ew", padx=5, pady=8)
         ctk.CTkSlider(q_frame, from_=1, to=100, number_of_steps=99, variable=quality_var, width=120).pack(side="left")
         ctk.CTkLabel(q_frame, textvariable=quality_var, width=30).pack(side="left", padx=5)
 
         # Output Dir
-        ctk.CTkLabel(form_frame, text="Carpeta de Salida:").grid(row=3, column=0, sticky="e", padx=5, pady=8)
+        ctk.CTkLabel(form_frame, text="Carpeta de Salida:").grid(row=4, column=0, sticky="e", padx=5, pady=8)
         out_frame = ctk.CTkFrame(form_frame, fg_color="transparent")
-        out_frame.grid(row=3, column=1, sticky="ew", padx=5, pady=8)
+        out_frame.grid(row=4, column=1, sticky="ew", padx=5, pady=8)
         out_var = tk.StringVar(value=self.output_var.get())
         ctk.CTkEntry(out_frame, textvariable=out_var).pack(side="left", fill="x", expand=True)
 
@@ -340,6 +379,7 @@ class ImageToPDFApp:
         def save_action():
             cfg = {
                 "PAGE_SIZE": size_var.get(),
+                "ORIGINAL_MODE": orig_var.get(),
                 "ORIENTATION": ori_var.get(),
                 "QUALITY": quality_var.get(),
                 "OUTPUT_DIR": out_var.get(),
@@ -347,6 +387,7 @@ class ImageToPDFApp:
             }
             save_user_config(cfg)
             self.page_size_var.set(size_var.get())
+            self.original_mode_var.set(orig_var.get())
             self.orientation_var.set(ori_var.get())
             self.quality_var.set(quality_var.get())
             self.output_var.set(out_var.get())
@@ -658,6 +699,14 @@ class ImageToPDFApp:
         orientation = self.orientation_var.get()
         quality = self.quality_var.get()
 
+        orig_display = self.original_mode_var.get()
+        orig_map = {
+            "Ajustar Ancho (100% Nativo)": "fit_width",
+            "Máximo 1920px (Optimizado)": "max_1920",
+            "Nativo Sin Ajuste": "raw"
+        }
+        original_mode = orig_map.get(orig_display, "fit_width")
+
         self.status_var.set("Generando PDF...")
         self.progress.set(0)
 
@@ -668,10 +717,10 @@ class ImageToPDFApp:
                 self.root.after(0, lambda: self.status_var.set(msg))
 
             try:
-                generate_pdf(self.files, output_path, page_size, orientation, quality, pc)
-                self.root.after(0, lambda: self.status_var.set(f"Guardado: {Path(output_path).name}"))
+                saved_path = generate_pdf(self.files, output_path, page_size, orientation, quality, original_mode=original_mode, progress_callback=pc)
+                self.root.after(0, lambda: self.status_var.set(f"Guardado: {Path(saved_path).name}"))
                 self.root.after(0, lambda: self.progress.set(0))
-                self.root.after(0, lambda: messagebox.showinfo("Éxito", f"PDF generado:\n{output_path}"))
+                self.root.after(0, lambda: messagebox.showinfo("Éxito", f"PDF generado correctamente:\n{saved_path}"))
             except Exception as e:
                 self.root.after(0, lambda: messagebox.showerror("Error", str(e)))
                 self.root.after(0, lambda: self.status_var.set("Error"))
