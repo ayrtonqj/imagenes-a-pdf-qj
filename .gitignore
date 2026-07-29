@@ -1,0 +1,30 @@
+# Environment & Secrets
+.env
+.env.local
+*.env
+
+# Python Bytecode & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# PyInstaller & Build Output
+build/
+dist/
+*.spec
+
+# IDE & OS Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Generated PDFs & Temp Files
+*.pdf
+temp/
