@@ -1,4 +1,4 @@
-# 🖼️ Conversor de Imágenes a PDF (Desktop Pro)
+# 🖼️ Conversor de Imágenes a PDF (Desktop)
 
 Una aplicación de escritorio moderna, rápida e intuitiva para convertir imágenes y archivos comprimidos (ZIP, RAR) en documentos PDF organizados. Desarrollada en Python con **CustomTkinter** y diseño nativo en Modo Oscuro.
 
