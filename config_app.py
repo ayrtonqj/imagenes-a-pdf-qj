@@ -4,7 +4,7 @@
 
 APP_NAME = "Conversor de Imágenes a PDF - QJ"
 APP_VERSION = "1.3.0"
-APP_EDITION = "Desktop Pro"
+APP_EDITION = "Desktop"
 
 DEVELOPER_NAME = "Ayrton QJ"
 DEVELOPER_HANDLE = "@ayrtonqj"

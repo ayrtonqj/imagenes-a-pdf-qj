@@ -288,7 +288,7 @@ class ImageToPDFApp:
             if "100%" in om:
                 size_info = (
                     "📐 Tamaño: Original\n"
-                    "   Modo: Ajustar Ancho (100% Nativo)\n"
+                    "   Modo: Ajustar Ancho (100% Nativo) - RECOMENDADO\n"
                     "   Conserva píxeles 6K/HD intactos y\n"
                     "   alinea el ancho visual para lectura pareja."
                 )
